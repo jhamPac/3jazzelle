@@ -2,18 +2,20 @@ module Palindrome where
 
 import Data.Char
 
-isPalindrome :: String -> Bool
-isPalindrome word = 
-    word == reverse word
-
-isEmptyWord :: String -> Maybe Bool
+isEmptyWord :: String -> Maybe String
 isEmptyWord word = 
     case word of 
-        "" -> Nothing
-        _ -> Just (isPalindrome word)
+        [] -> Nothing
+        _ -> Just word
 
 allLowerCase :: String -> String
 allLowerCase = map toLower
 
-sanitize :: String -> String
-sanitize = filter (\x -> not (isSpace x)) . allLowerCase
+isOwnReverse :: Maybe String -> Maybe Bool
+isOwnReverse s = 
+    case s of
+        Nothing -> Just False
+        Just s -> Just (s == reverse s)
+
+isPalindrome :: String -> Maybe Bool
+isPalindrome = isOwnReverse . isEmptyWord . filter (\x -> not (isSpace x)) . allLowerCase
