@@ -36,7 +36,7 @@ removeSpaces phrase =
         (x:xs) -> x : removeSpaces xs
 
 sanitizeForPalinDrome :: String -> String
-sanitizeForPalinDrome = filter (\c -> not (isSpace c)) . removeSpaces . allLowerCase
+sanitizeForPalinDrome = filter (\x -> not (isSpace x)) . allLowerCase
 
 main :: IO ()
 main = 
