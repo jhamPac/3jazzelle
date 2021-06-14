@@ -30,9 +30,9 @@ helloResponse =
     asciiLines
         [ "HTTP/1.1 200 OK"
         , "Content-Type: text/plain; charset=us-ascii"
-        , "Content-Length: 7"
+        , "Content-Length: 31"
         , ""
-        , "Hello!\n"
+        , "Hello World to all Haskellers!\n"
         ]
 
 asciiLines :: [String] -> BS.ByteString
