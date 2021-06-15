@@ -20,6 +20,68 @@ import qualified Network.Socket.ByteString.Lazy as LSocket
 -- network simple
 import qualified Network.Simple.TCP as NS
 
+--------------------------------------
+-- HTTP types
+--------------------------------------
+
+data Digit = D0 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9 
+    deriving (Eq, Show, Bounded, Enum, Ord)
+
+-- protocol versioning
+
+data HttpVersion = HttpVersion Digit Digit
+    deriving (Eq, Show)
+
+-- message format
+
+data Request = Request RequestLine [HeaderField] (Maybe MessageBody)
+    deriving (Eq, Show)
+
+data Response = Response StatusLine [HeaderField] (Maybe MessageBody)
+    deriving (Eq, Show)
+
+-- request line
+
+data RequestLine = RequestLine Method RequestTarget HttpVersion
+    deriving (Eq, Show)
+
+newtype Method = Method BS.ByteString
+    deriving (Eq, Show)
+
+-- status line
+
+data StatusLine = StatusLine HttpVersion StatusCode ReasonPhrase
+    deriving (Eq, Show)
+
+data StatusCode = StatusCode Digit Digit Digit
+    deriving (Eq, Show)
+
+newtype ReasonPhrase = ReasonPhrase BS.ByteString
+    deriving (Eq, Show)
+
+-- header fields
+
+data HeaderField = HeaderField FieldName FieldValue
+    deriving (Eq, Show)
+
+newtype FieldName = FieldName BS.ByteString
+    deriving (Eq, Show)
+
+newtype FieldValue = FieldValue BS.ByteString
+    deriving (Eq, Show)
+
+-- message body
+
+newtype MessageBody = MessageBody LBS.ByteString
+    deriving (Eq, Show)
+
+-- request target
+
+newtype RequestTarget = RequestTarget BS.ByteString
+    deriving (Eq, Show)
+
+-- application start
+
 server :: (Socket -> IO ()) -> IO a
 server f =
     NS.serve NS.HostAny "9000" $ \(socket, _socketAddress) ->
