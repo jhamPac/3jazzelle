@@ -20,6 +20,31 @@ import qualified Network.Socket.ByteString.Lazy as LSocket
 -- network simple
 import qualified Network.Simple.TCP as NS
 
+-- application start
+
+server :: (Socket -> IO ()) -> IO a
+server f =
+    NS.serve NS.HostAny "9000" $ \(socket, _socketAddress) ->
+        f socket
+
+helloResponse :: BS.ByteString
+helloResponse =
+    asciiLines
+        [ "HTTP/1.1 200 OK"
+        , "Content-Type: text/plain; charset=us-ascii"
+        , "Content-Length: 31"
+        , ""
+        , "Hello World to all Haskellers!\n"
+        ]
+
+asciiLines :: [String] -> BS.ByteString
+asciiLines xs = 
+    ASCII.pack (List.intercalate "\r\n" xs)
+
+sayHello :: Socket -> IO ()
+sayHello socket =
+    Socket.sendAll socket helloResponse
+
 --------------------------------------
 -- HTTP types
 --------------------------------------
@@ -80,27 +105,23 @@ newtype MessageBody = MessageBody LBS.ByteString
 newtype RequestTarget = RequestTarget BS.ByteString
     deriving (Eq, Show)
 
--- application start
+---
+-- 4 Response encoding
+---
 
-server :: (Socket -> IO ()) -> IO a
-server f =
-    NS.serve NS.HostAny "9000" $ \(socket, _socketAddress) ->
-        f socket
+encodingDigit :: Digit -> BSB.Builder
+encodingDigit d = BSB.string7 [digitChar d]
 
-helloResponse :: BS.ByteString
-helloResponse =
-    asciiLines
-        [ "HTTP/1.1 200 OK"
-        , "Content-Type: text/plain; charset=us-ascii"
-        , "Content-Length: 31"
-        , ""
-        , "Hello World to all Haskellers!\n"
-        ]
-
-asciiLines :: [String] -> BS.ByteString
-asciiLines xs = 
-    ASCII.pack (List.intercalate "\r\n" xs)
-
-sayHello :: Socket -> IO ()
-sayHello socket =
-    Socket.sendAll socket helloResponse
+digitChar :: Digit -> Char
+digitChar d =
+    case d of
+        D0 -> '0'
+        D1 -> '1'
+        D2 -> '2'
+        D3 -> '3'
+        D4 -> '4'
+        D5 -> '5'
+        D6 -> '6'
+        D7 -> '7'
+        D8 -> '8'
+        D9 -> '9'
