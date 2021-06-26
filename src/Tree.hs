@@ -16,3 +16,8 @@ treeElem x (Node a left right)
     | x == a = True
     | x < a = treeElem x left
     | x > a = treeElem x right
+
+list = [7, 3, 10, 21, 2, 4, 0, 33, 9]
+trees = foldr treeInsert EmptyTree list
+
+main = print trees
